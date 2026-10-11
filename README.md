@@ -1,3 +1,6 @@
+
+
+pls check branch not main
 # NayaSetu — Indian Court Document Intelligence
 
 NayaSetu is an intelligent document processing web platform tailored for the Indian judicial system. It ingests, extracts, analyzes, and structures court orders, judgments, FIRs, charge sheets, and petitions.
