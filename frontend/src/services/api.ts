@@ -1,6 +1,6 @@
 import { DocumentExtractionResponse, HealthStatus } from '../types/document';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
 
 export async function fetchHealth(): Promise<HealthStatus> {
   const response = await fetch(`${API_BASE_URL}/api/health`, {
@@ -34,6 +34,58 @@ export async function extractDocument(file: File): Promise<DocumentExtractionRes
       }
     } catch {
       // If error response is not JSON
+    }
+    throw new Error(errorMessage);
+  }
+
+  return response.json();
+}
+
+export async function analyzeDocument(document: DocumentExtractionResponse): Promise<any> {
+  const response = await fetch(`${API_BASE_URL}/api/documents/analyze`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify(document),
+  });
+
+  if (!response.ok) {
+    let errorMessage = `Analysis failed with status ${response.status}`;
+    try {
+      const errJson = await response.json();
+      if (errJson.detail) {
+        errorMessage = errJson.detail;
+      }
+    } catch {
+      // Non-JSON error
+    }
+    throw new Error(errorMessage);
+  }
+
+  return response.json();
+}
+
+export async function askQuestion(question: string, pages: any[]): Promise<any> {
+  const response = await fetch(`${API_BASE_URL}/api/documents/ask`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify({ question, pages }),
+  });
+
+  if (!response.ok) {
+    let errorMessage = `Question answering failed with status ${response.status}`;
+    try {
+      const errJson = await response.json();
+      if (errJson.detail) {
+        errorMessage = errJson.detail;
+      }
+    } catch {
+      // Non-JSON error
     }
     throw new Error(errorMessage);
   }

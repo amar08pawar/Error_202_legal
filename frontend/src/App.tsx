@@ -21,23 +21,23 @@ export const App: React.FC = () => {
                 Indian Court Document Intelligence
               </h2>
               <p className="mt-3 text-sm sm:text-base text-slate-600">
-                Fast, secure in-memory PDF extraction and structure analysis for Indian judicial orders, FIRs, and legal petitions.
+                In-memory digital PDF extraction and targeted Tesseract OCR for Indian judicial orders, FIRs, charge sheets, and petitions.
               </p>
             </div>
 
             {/* Document Upload Area */}
             <DocumentUpload onExtractionSuccess={(data) => setExtractedData(data)} />
 
-            {/* Feature Highlights for Phase 1 */}
+            {/* Feature Highlights for Phase 2 */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto pt-6">
               <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-sm flex items-start space-x-3.5">
                 <div className="p-2.5 rounded-lg bg-indigo-50 text-indigo-700">
                   <Cpu className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-900">PyMuPDF High-Speed Engine</h3>
+                  <h3 className="text-sm font-semibold text-slate-900">PyMuPDF Text Engine</h3>
                   <p className="text-xs text-slate-500 mt-1">
-                    C-accelerated in-memory digital text extraction with zero permanent disk persistence.
+                    C-accelerated in-memory extraction for digital judicial orders with zero disk persistence.
                   </p>
                 </div>
               </div>
@@ -47,9 +47,9 @@ export const App: React.FC = () => {
                   <FileSearch className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-900">Intelligent OCR Detection</h3>
+                  <h3 className="text-sm font-semibold text-slate-900">Targeted Tesseract OCR</h3>
                   <p className="text-xs text-slate-500 mt-1">
-                    Scanned and handwritten pages with sparse text are accurately flagged for OCR.
+                    Selectively targets scanned and sparse pages, leaving digital text untouched to optimize performance.
                   </p>
                 </div>
               </div>
@@ -59,9 +59,9 @@ export const App: React.FC = () => {
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-900">Strict Judicial Privacy</h3>
+                  <h3 className="text-sm font-semibold text-slate-900">Normalized Evidence Flow</h3>
                   <p className="text-xs text-slate-500 mt-1">
-                    Uploaded documents are evaluated strictly in RAM with immediate resource disposal.
+                    Standardizes continuous text and produces verifiable page citations for future legal analysis.
                   </p>
                 </div>
               </div>
@@ -80,11 +80,11 @@ export const App: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3">
           <p>© 2026 NayaSetu. Built for Indian Legal Tech Innovation.</p>
           <div className="flex items-center space-x-4">
-            <span>FastAPI + PyMuPDF</span>
+            <span>FastAPI + PyMuPDF + Tesseract</span>
             <span>•</span>
             <span>React + Vite + TypeScript</span>
             <span>•</span>
-            <span className="font-semibold text-indigo-700">Phase 1 Complete</span>
+            <span className="font-semibold text-indigo-700">Phase 2 Active</span>
           </div>
         </div>
       </footer>

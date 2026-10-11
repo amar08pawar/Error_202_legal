@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchHealth } from '../services/api';
 import { HealthStatus } from '../types/document';
-import { CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
+import { CheckCircle2, AlertCircle, RefreshCw, Cpu } from 'lucide-react';
 
 export const HealthStatusBadge: React.FC = () => {
   const [health, setHealth] = useState<HealthStatus | null>(null);
@@ -24,7 +24,6 @@ export const HealthStatusBadge: React.FC = () => {
 
   useEffect(() => {
     checkHealth();
-    // Poll every 30 seconds
     const interval = setInterval(checkHealth, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -46,10 +45,29 @@ export const HealthStatusBadge: React.FC = () => {
           Backend Offline (Retry)
         </button>
       ) : (
-        <span className="inline-flex items-center px-2.5 py-1 rounded-full font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-          <CheckCircle2 className="w-3 h-3 mr-1 text-emerald-500" />
-          API Connected ({health?.app_name} v{health?.version})
-        </span>
+        <div className="flex items-center space-x-2">
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <CheckCircle2 className="w-3 h-3 mr-1 text-emerald-500" />
+            API Connected
+          </span>
+          {health?.ocr_available ? (
+            <span
+              className="inline-flex items-center px-2.5 py-1 rounded-full font-medium bg-indigo-50 text-indigo-700 border border-indigo-200"
+              title="Tesseract OCR engine is detected and ready"
+            >
+              <Cpu className="w-3 h-3 mr-1 text-indigo-500" />
+              OCR: Active
+            </span>
+          ) : (
+            <span
+              className="inline-flex items-center px-2.5 py-1 rounded-full font-medium bg-amber-50 text-amber-700 border border-amber-200"
+              title="Tesseract OCR binary not detected on backend host. Selectable text extraction works, but OCR will report unavailable."
+            >
+              <Cpu className="w-3 h-3 mr-1 text-amber-500" />
+              OCR: Binary Unset
+            </span>
+          )}
+        </div>
       )}
     </div>
   );

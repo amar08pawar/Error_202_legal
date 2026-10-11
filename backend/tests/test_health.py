@@ -13,6 +13,8 @@ def test_health_check_returns_success():
     assert data["status"] == "healthy"
     assert data["app_name"] == "NayaSetu"
     assert "version" in data
+    assert "ocr_available" in data
+    assert isinstance(data["ocr_available"], bool)
 
 
 def test_health_check_does_not_expose_secrets():

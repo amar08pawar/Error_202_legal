@@ -1,13 +1,25 @@
 # NayaSetu — Indian Court Document Intelligence
 
-NayaSetu is an intelligent document processing web platform tailored for the Indian judicial system. It ingests, extracts, analyzes, and structures court orders, FIRs, charge sheets, and petitions.
+NayaSetu is an intelligent document processing web platform tailored for the Indian judicial system. It ingests, extracts, analyzes, and structures court orders, judgments, FIRs, charge sheets, and petitions.
 
-> **Phase 1 Status**: Foundation & PDF Processing.
-> In Phase 1, the platform performs high-speed in-memory PDF digital text extraction and identifies pages requiring OCR fallback. AI analysis, Firebase persistence, OCR engine execution, and external legal-data integrations are planned for future phases and **are not yet implemented**.
+> **Current Status**: **Phase 3 — Legal Document Analysis MVP**.
+> In this phase, NayaSetu connects in-memory PyMuPDF extraction to automated legal intelligence, extracting judicial jurisdiction, case registration, parties, dates, document types, cited statutory sections, and operative rulings. It synthesizes plain-language summaries and provides document-grounded question answering with zero-hallucination page citations.
 
 ---
 
-## 1. Technology Stack
+## 1. Five-Phase Product Roadmap
+
+| Phase | Milestone | Status | Details & Current Verification |
+|---|---|---|---|
+| **Phase 1** | Foundation & PDF Processing | **Implemented & Verified** | In-memory PyMuPDF extraction per page, file validation, health checks, error handling, 100% test pass. |
+| **Phase 2** | Selective OCR & Evidence Foundation | **Partially Implemented / Verified (Selectable Text)** | Selective routing and normalized text models pass. Tesseract OS binary is missing on host, so real scanned-PDF OCR remains **Not Verified**. |
+| **Phase 3** | Legal Document Analysis MVP | **Implemented & Verified** | Judicial entities, statutes, disposition, grounded Q&A, and workflow UI verified. No LLM key configured on host; uses extractive fallback. |
+| **Phase 4** | Cloud Persistence & History | **Planned (Not Implemented)** | Firebase Authentication and Cloud Firestore persistent document storage have **not** been implemented. Processing is strictly in-memory. |
+| **Phase 5** | Cloud Deployment & Multilingual | **Planned / Not Verified** | Containerized deployment and Indic language packs planned for future release; deployment is **not yet verified**. |
+
+---
+
+## 2. Technology Stack
 
 ### Frontend
 - **Framework**: React 18
@@ -21,52 +33,26 @@ NayaSetu is an intelligent document processing web platform tailored for the Ind
 - **API Framework**: FastAPI 0.110.0
 - **ASGI Server**: Uvicorn 0.27.1
 - **PDF Text Engine**: PyMuPDF (`fitz`) 1.28.2
+- **OCR Framework**: pytesseract 0.3.13 & Pillow 12.0.0 (wrapping Tesseract OCR)
 - **Validation**: Pydantic 2.12.5
 - **File Upload Handler**: python-multipart 0.0.9
 - **Testing**: pytest 9.0.2 & HTTPX 0.27.0
 
 ---
 
-## 2. Prerequisites and Tested Versions
+## 3. Current Limitations & Operational State
 
-| Tool | Tested Version | Minimum Required |
-|---|---|---|
-| **Python** | `3.14.2` | `3.10+` |
-| **Node.js** | `v22.20.0` | `18.0+` |
-| **npm** | `10.9.3` | `9.0+` |
-| **OS** | Windows 10/11 (PowerShell) | Cross-platform |
-
----
-
-## 3. Environment Configuration
-
-### Backend Configuration
-Copy `backend/.env.example` to `backend/.env` (optional, sane defaults are embedded):
-```powershell
-Copy-Item backend\.env.example backend\.env
-```
-
-Configurable variables:
-- `HOST`: Server bind address (default: `127.0.0.1`)
-- `PORT`: Server port (default: `8000`)
-- `MAX_UPLOAD_SIZE_BYTES`: Upload ceiling in bytes (default: `15728640` = 15 MB)
-- `OCR_THRESHOLD_CHARS`: Minimum characters per page to consider text extraction sufficient without OCR (default: `30`)
-- `ALLOWED_ORIGINS`: Comma-separated list of allowed CORS origins (default: `http://localhost:5173,http://127.0.0.1:5173`)
-
-### Frontend Configuration
-Copy `frontend/.env.example` to `frontend/.env`:
-```powershell
-Copy-Item frontend\.env.example frontend\.env
-```
-
-Configurable variables:
-- `VITE_API_BASE_URL`: Base URL of the running FastAPI backend (default: `http://localhost:8000`)
+- **Selectable-Text PDF Extraction**: Fully tested and verified using PyMuPDF in RAM.
+- **Tesseract Host Dependency**: The Python library `pytesseract` is installed, but the standalone Tesseract OS executable is not installed on the server host. Pages requiring OCR report `ocr_status: "unavailable"` safely; real scanned-PDF OCR remains **unverified** until Tesseract is installed.
+- **AI Intelligence Provider**: No external LLM API key (`GEMINI_API_KEY` or `OPENAI_API_KEY`) is configured in the environment. Legal analysis runs in **verified extractive fallback mode**, extracting entities and answering queries strictly from verbatim document text without generative hallucination.
+- **Persistence**: No database or cloud storage (Firebase / Firestore) is integrated. Uploaded documents are processed entirely in-memory with zero disk persistence.
+- **Deployment**: Local execution on Windows (FastAPI + Vite) is tested; containerized cloud deployment is not yet verified.
 
 ---
 
 ## 4. Installation & Local Setup (Windows PowerShell)
 
-Open PowerShell and navigate to the repository directory:
+Navigate to the project root:
 ```powershell
 cd C:\Users\Lenovo\OneDrive\Desktop\NayaSetu\Error_202_legal
 ```
@@ -74,134 +60,104 @@ cd C:\Users\Lenovo\OneDrive\Desktop\NayaSetu\Error_202_legal
 ### Terminal 1: Backend Setup & Launch
 
 ```powershell
-# Navigate to backend directory
 cd backend
 
-# Install pinned Python dependencies
+# Install dependencies
 python -m pip install -r requirements.txt
 
-# Start the FastAPI server with hot-reload
+# Start FastAPI server
 python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
-The backend API is now running at `http://127.0.0.1:8000`. Interactive API documentation is available at `http://127.0.0.1:8000/docs`.
+The backend API is accessible at `http://127.0.0.1:8000`. Interactive Swagger documentation is at `http://127.0.0.1:8000/docs`.
 
 ### Terminal 2: Frontend Setup & Launch
 
-Open a second PowerShell window:
 ```powershell
-# Navigate to frontend directory
-cd C:\Users\Lenovo\OneDrive\Desktop\NayaSetu\Error_202_legal\frontend
+cd frontend
 
-# Install dependencies (uses committed package-lock.json)
+# Install dependencies
 npm install
 
 # Start Vite development server
 npm run dev
 ```
-Open your browser at `http://localhost:5173` to access NayaSetu.
+Open your browser at `http://localhost:5174` (or `http://localhost:5173`) to access NayaSetu.
 
 ---
 
-## 5. API Endpoints
+## 5. API Endpoints & Upload-to-Analysis Workflow
 
-### 1. Health Check
+### Workflow Overview
+```text
+1. Upload PDF  ──►  2. Extract & OCR  ──►  3. Analyze Legal Facts  ──►  4. Summary, Evidence & Q&A
+```
+
+### Endpoints
+
+#### 1. Service Health Check
 - **Route**: `GET /api/health`
-- **Description**: Returns basic application health status without exposing environment keys or secrets.
-- **Sample Response (200 OK)**:
-```json
-{
-  "status": "healthy",
-  "app_name": "NayaSetu",
-  "version": "1.0.0"
-}
-```
+- **Response**:
+  ```json
+  {
+    "status": "healthy",
+    "app_name": "NayaSetu",
+    "version": "1.0.0",
+    "ocr_available": false
+  }
+  ```
 
-### 2. Document Text Extraction
+#### 2. Document Extraction
 - **Route**: `POST /api/documents/extract`
-- **Content-Type**: `multipart/form-data`
-- **Parameter**: `file` (Binary PDF file)
-- **Validation**:
-  - Maximum upload size enforced (default 15 MB).
-  - Validates `%PDF-` magic header (rejects non-PDF files).
-  - Rejects empty (0 bytes) or corrupted PDFs.
-  - Rejects password-protected / encrypted PDFs with an informative message.
-  - Zero disk storage: parsed strictly in RAM.
-- **Sample Response (200 OK)**:
-```json
-{
-  "filename": "delhi_high_court_order.pdf",
-  "file_size_bytes": 104857,
-  "total_pages": 2,
-  "pages_requiring_ocr": [2],
-  "has_ocr_needed_pages": true,
-  "pages": [
-    {
-      "page_number": 1,
-      "text": "IN THE HIGH COURT OF DELHI AT NEW DELHI\n...",
-      "char_count": 842,
-      "requires_ocr": false
-    },
-    {
-      "page_number": 2,
-      "text": "",
-      "char_count": 0,
-      "requires_ocr": true
-    }
-  ]
-}
-```
+- **Content-Type**: `multipart/form-data` (Field: `file`)
+- **Response**: `DocumentExtractionResponse` containing total pages, per-page text, character counts, extraction method, OCR status, and normalized full text.
+
+#### 3. Legal Document Analysis
+- **Route**: `POST /api/documents/analyze`
+- **Content-Type**: `application/json` (Payload: `DocumentExtractionResponse`)
+- **Extracted Fields**:
+  - `court_name`: Court or tribunal jurisdiction (e.g. *High Court of Delhi*).
+  - `case_number`: Registration number (e.g. *Bail Appln. 2104/2024*).
+  - `petitioner` & `respondent`: Named legal parties with source page numbers.
+  - `order_date`: Decision or filing date.
+  - `document_type`: Legal classification (*Bail Order*, *Judgment*, etc.).
+  - `cited_sections`: Statutory provisions cited (*Section 439 CrPC*, *Section 420 IPC*).
+  - `disposition`: Operative judicial holding (*Bail Granted*, *Dismissed*).
+  - `plain_language_summary`: Verified, readable synthesis.
+  - `key_findings`: Bulleted legal takeaways with page links.
+  - `analysis_provider`: Active intelligence provider (`extractive_fallback`).
+  - `provider_notes`: Operational mode and limitations notice.
+
+#### 4. Grounded Document Q&A
+- **Route**: `POST /api/documents/ask`
+- **Content-Type**: `application/json`
+- **Payload**: `{ "question": "Was bail granted?", "pages": [...] }`
+- **Response**: `QAResponse` containing grounded answer, cited page numbers, and verbatim evidence snippets. Out-of-document queries return `is_found_in_doc: false`.
 
 ---
 
-## 6. Running Automated Tests
+## 6. Synthetic Test Data & Verification
 
-Run backend tests using pytest from the `backend/` directory:
+A synthetic test PDF fixture is provided in the repository for end-to-end verification:
+- **File**: `test_data/sample_delhi_high_court_bail_order.pdf`
+- **Purpose**: Strictly synthetic test data modeled after an Indian High Court bail order. Contains no real personal or sensitive legal facts.
+- **Testing in UI**: Drag and drop this file on the home screen at `http://localhost:5174/` to test extraction, legal analysis, and Q&A.
+
+---
+
+## 7. Automated Test Results
+
+### Backend Tests (`pytest`)
 ```powershell
 cd backend
-python -m pytest -v
+python -m pytest
 ```
+- **14 passed**, **1 skipped** in 1.83s.
+- Covers health checks, PDF validation, PyMuPDF extraction, mocked OCR routing, judicial entity extraction, cited statutes, disposition detection, grounded Q&A, and out-of-document query rejection.
 
-The test suite covers:
-- Service health endpoint integrity and secret leak prevention (`test_health.py`).
-- Valid multi-page PDF text extraction with 1-based page indices (`test_pdf_extraction.py`).
-- Empty (0-byte) file rejection.
-- Invalid non-PDF data rejection.
-- Scanned / sparse text detection (`requires_ocr` flagging).
-- Mixed-page documents where only sparse pages trigger the OCR requirement flag.
-- Password-protected / encrypted PDF rejection with safe error details.
-
----
-
-## 7. Manual Integration Verification Checklist
-
-1. **Start Backend**: Launch `uvicorn app.main:app --port 8000` in `backend/`.
-2. **Start Frontend**: Launch `npm run dev` in `frontend/`.
-3. **Verify Connectivity**: Navigate to `http://localhost:5173`. Check that the header displays the green pill: `API Connected (NayaSetu v1.0.0)`.
-4. **Valid PDF Upload**:
-   - Drag & drop or select a valid court order PDF.
-   - Click **Extract Document Text**.
-   - Verify page count, page-numbered extracted text, and character counter.
-5. **Scanned PDF Check**:
-   - Upload a scanned PDF without embedded text.
-   - Verify that the amber alert triggers: `OCR Processing Required on Page(s) ...`.
-6. **Error Handling**:
-   - Attempt uploading a `.txt` or corrupted file renamed to `.pdf`.
-   - Confirm clear error banner: `File header does not match a valid PDF format (%PDF- missing).`
-7. **Reset Workflow**:
-   - Click **Upload Another Document** to verify full UI state reset.
-
----
-
-## 8. Current Limitations & Future Roadmap
-
-- **Scanned Text OCR**: Phase 1 identifies pages requiring OCR but does not perform OCR. Tesseract or cloud vision OCR will be integrated in Phase 2.
-- **Cloud Persistence**: Uploaded PDFs are parsed strictly in RAM and discarded immediately. Firebase Cloud Firestore and Storage persistence will be introduced in subsequent phases.
-- **Legal Intelligence**: Named entity recognition, section mapping (IPC, CrPC, BNS), and automated legal summaries via LLM APIs will be integrated in Phase 3.
-
----
-
-## 9. Dependency Management Protocol
-
-- Always pin exact versions for Python direct dependencies in `backend/requirements.txt`.
-- When updating or adding frontend dependencies, install via `npm install <package> --save` to automatically update `package.json` and generate `package-lock.json`.
-- Never commit `.env`, credentials, or temporary storage artifacts.
+### Frontend Build (`npm run build`)
+```powershell
+cd frontend
+npm run build
+```
+- TypeScript check (`tsc`) passed with 0 errors.
+- Vite production bundle built successfully.

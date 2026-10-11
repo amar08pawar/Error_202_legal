@@ -16,11 +16,11 @@ export const Header: React.FC = () => {
                 NayaSetu
               </h1>
               <span className="text-xs font-semibold px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">
-                Phase 1
+                Phase 2
               </span>
             </div>
             <p className="text-xs text-slate-500">
-              Indian Court Document Intelligence
+              Indian Court Document Intelligence & OCR
             </p>
           </div>
         </div>
@@ -29,7 +29,7 @@ export const Header: React.FC = () => {
           <HealthStatusBadge />
           <div className="hidden md:flex items-center text-xs text-slate-500 border-l border-slate-200 pl-4 space-x-1">
             <BookOpen className="w-3.5 h-3.5 text-slate-400" />
-            <span>PyMuPDF Text Engine</span>
+            <span>PyMuPDF + Tesseract</span>
           </div>
         </div>
       </div>
