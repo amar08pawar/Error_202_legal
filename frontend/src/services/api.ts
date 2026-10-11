@@ -92,3 +92,46 @@ export async function askQuestion(question: string, pages: any[]): Promise<any> 
 
   return response.json();
 }
+
+export async function fetchDocumentHistory(): Promise<any[]> {
+  const response = await fetch(`${API_BASE_URL}/api/documents/history`, {
+    headers: {
+      'Accept': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch history (${response.status})`);
+  }
+
+  return response.json();
+}
+
+export async function fetchHistoryDocument(documentId: string): Promise<any> {
+  const response = await fetch(`${API_BASE_URL}/api/documents/history/${documentId}`, {
+    headers: {
+      'Accept': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch saved document (${response.status})`);
+  }
+
+  return response.json();
+}
+
+export async function deleteHistoryDocument(documentId: string): Promise<any> {
+  const response = await fetch(`${API_BASE_URL}/api/documents/history/${documentId}`, {
+    method: 'DELETE',
+    headers: {
+      'Accept': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to delete saved document (${response.status})`);
+  }
+
+  return response.json();
+}

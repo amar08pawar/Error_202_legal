@@ -24,6 +24,7 @@ import {
 
 interface ExtractedDocumentViewerProps {
   documentData: DocumentExtractionResponse;
+  initialAnalysis?: LegalAnalysisResponse | null;
   onReset: () => void;
 }
 
@@ -31,6 +32,7 @@ type ActiveViewTab = 'analysis' | 'pages' | 'normalized' | 'evidence';
 
 export const ExtractedDocumentViewer: React.FC<ExtractedDocumentViewerProps> = ({
   documentData,
+  initialAnalysis,
   onReset,
 }) => {
   const [activeTab, setActiveTab] = useState<ActiveViewTab>('analysis');
@@ -39,7 +41,7 @@ export const ExtractedDocumentViewer: React.FC<ExtractedDocumentViewerProps> = (
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
 
   // Analysis state
-  const [analysis, setAnalysis] = useState<LegalAnalysisResponse | null>(null);
+  const [analysis, setAnalysis] = useState<LegalAnalysisResponse | null>(initialAnalysis || null);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
 
@@ -60,9 +62,12 @@ export const ExtractedDocumentViewer: React.FC<ExtractedDocumentViewerProps> = (
   };
 
   useEffect(() => {
-    // Automatically trigger initial legal intelligence extraction on mount
-    handleRunAnalysis();
-  }, [documentData]);
+    if (initialAnalysis) {
+      setAnalysis(initialAnalysis);
+    } else {
+      handleRunAnalysis();
+    }
+  }, [documentData, initialAnalysis]);
 
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes';

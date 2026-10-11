@@ -50,6 +50,12 @@ secrets.toml
 service-account*.json
 firebase-adminsdk*.json
 
+# Local SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+backend/data/
+
 # IDE and OS
 .idea/
 .vscode/

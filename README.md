@@ -2,8 +2,8 @@
 
 NayaSetu is an intelligent document processing web platform tailored for the Indian judicial system. It ingests, extracts, analyzes, and structures court orders, judgments, FIRs, charge sheets, and petitions.
 
-> **Current Status**: **Phase 3 — Legal Document Analysis MVP**.
-> In this phase, NayaSetu connects in-memory PyMuPDF extraction to automated legal intelligence, extracting judicial jurisdiction, case registration, parties, dates, document types, cited statutory sections, and operative rulings. It synthesizes plain-language summaries and provides document-grounded question answering with zero-hallucination page citations.
+> **Current Status**: **Legal RAG Classification MVP**.
+> In this phase, NayaSetu connects in-memory PyMuPDF extraction to multi-parameter legal classification (Category, Document Type, Procedural Stage, Outcome, Cited Statutes, and Preliminary Statutory Severity). It features a local Legal RAG retrieval adapter, IPC-to-BNS statutory bridging, code-checked citation validation, persistent local SQLite history, and document-grounded Q&A with zero-hallucination citations.
 
 ---
 
@@ -13,8 +13,8 @@ NayaSetu is an intelligent document processing web platform tailored for the Ind
 |---|---|---|---|
 | **Phase 1** | Foundation & PDF Processing | **Implemented & Verified** | In-memory PyMuPDF extraction per page, file validation, health checks, error handling, 100% test pass. |
 | **Phase 2** | Selective OCR & Evidence Foundation | **Partially Implemented / Verified (Selectable Text)** | Selective routing and normalized text models pass. Tesseract OS binary is missing on host, so real scanned-PDF OCR remains **Not Verified**. |
-| **Phase 3** | Legal Document Analysis MVP | **Implemented & Verified** | Judicial entities, statutes, disposition, grounded Q&A, and workflow UI verified. No LLM key configured on host; uses extractive fallback. |
-| **Phase 4** | Cloud Persistence & History | **Planned (Not Implemented)** | Firebase Authentication and Cloud Firestore persistent document storage have **not** been implemented. Processing is strictly in-memory. |
+| **Phase 3** | Legal Document Analysis & RAG MVP | **Implemented & Verified** | Multi-parameter classification, statutory severity assessment with disclaimers, external legal RAG knowledge retrieval, and grounded Q&A verified. |
+| **Phase 4** | Persistent Storage & History | **Implemented Locally & Verified (SQLite)** | Persistent local SQLite document storage (`backend/data/nayasetu_history.db`) surviving restarts; document history inspection, reopening, and deletion endpoints. Firebase Auth/Firestore remains future cloud scope. |
 | **Phase 5** | Cloud Deployment & Multilingual | **Planned / Not Verified** | Containerized deployment and Indic language packs planned for future release; deployment is **not yet verified**. |
 
 ---
@@ -151,8 +151,8 @@ A synthetic test PDF fixture is provided in the repository for end-to-end verifi
 cd backend
 python -m pytest
 ```
-- **14 passed**, **1 skipped** in 1.83s.
-- Covers health checks, PDF validation, PyMuPDF extraction, mocked OCR routing, judicial entity extraction, cited statutes, disposition detection, grounded Q&A, and out-of-document query rejection.
+- **23 passed**, **1 skipped** (optional standalone Tesseract binary OCR test).
+- Covers PDF validation, PyMuPDF extraction, multi-parameter classification (Category, Doc Type, Procedural Stage, Outcome), cited statutes, statutory seriousness with disclaimers, legal RAG retrieval, grounded Q&A, and persistent SQLite history.
 
 ### Frontend Build (`npm run build`)
 ```powershell
@@ -161,3 +161,16 @@ npm run build
 ```
 - TypeScript check (`tsc`) passed with 0 errors.
 - Vite production bundle built successfully.
+
+---
+
+## 8. Legal RAG Architecture & Upstream Attribution
+
+NayaSetu integrates an authoritative statutory knowledge base and retrieval layer informed by open-source Indian legal NLP research:
+
+- **Upstream Reference**: [https://github.com/goyashek/bns-legal-rag](https://github.com/goyashek/bns-legal-rag) by [@goyashek](https://github.com/goyashek) (MIT License).
+- **Integrated Capabilities**:
+  1. **IPC ↔ BNS & CrPC ↔ BNSS Cross-Statute Bridge**: Maps older penal and procedural sections in judicial orders to modern 2023 enacted codes (e.g. IPC 420 $\rightarrow$ BNS 318(4), CrPC 439 $\rightarrow$ BNSS 483).
+  2. **Deterministic Code-Checked Citation Validator**: Validates all generated and extracted statutory citations directly in Python against retrieved context chunks and document text, preventing AI citation hallucinations.
+  3. **Authoritative Knowledge Base**: Covers key Indian penal provisions (IPC/BNS), procedural bail laws (CrPC/BNSS), constitutional articles, and landmark Supreme Court bail jurisprudence (*Satender Kumar Antil v. CBI*).
+- **Integration Architecture Report**: See [`docs/LEGAL_RAG_INTEGRATION.md`](docs/LEGAL_RAG_INTEGRATION.md) for full architectural details, license compliance, and comparison of integrated versus referenced components.

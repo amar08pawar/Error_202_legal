@@ -42,8 +42,9 @@ async def health_check() -> HealthResponse:
     )
 
 
-from app.api.routes import documents_router, analysis_router
+from app.api.routes import documents_router, analysis_router, history_router
 
 # Register API routers
 app.include_router(documents_router, prefix="/api")
 app.include_router(analysis_router, prefix="/api")
+app.include_router(history_router, prefix="/api")
